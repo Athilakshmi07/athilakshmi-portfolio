@@ -32,7 +32,7 @@ export const userData = {
   phone: '+91 8248377083',
   github: 'https://github.com/Athilakshmi07',
   linkedin: 'https://linkedin.com/in/athilakshmi-s',
-  resume: '/Athilakshmi.pdf',
+  resume: `${import.meta.env.BASE_URL}Athilakshmi.pdf`,
   summary:
     'Results-driven Software Engineer with 4+ years of experience designing scalable, high-performance web applications. Expert in React.js, TypeScript, and micro-frontend architecture with a strong focus on HIPAA-compliant workflows, event-driven systems, and clean code principles.',
 } as const;
