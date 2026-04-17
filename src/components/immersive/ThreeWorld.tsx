@@ -7,6 +7,18 @@ type Tower = {
   pulse: number;
 };
 
+type DropBall = {
+  mesh: THREE.Mesh;
+  ripple: THREE.Mesh;
+  x: number;
+  z: number;
+  delay: number;
+  speed: number;
+  height: number;
+  floor: number;
+  drift: number;
+};
+
 const ThreeWorld = memo(() => {
   const mountRef = useRef<HTMLDivElement | null>(null);
 
@@ -143,6 +155,54 @@ const ThreeWorld = memo(() => {
 
     const ribbons = [makeRibbon('#14f1d9', 0.7, 0), makeRibbon('#a3e635', 1.25, 1.4), makeRibbon('#fb3f6c', 0.18, 2.6)];
 
+    const ballGeometry = new THREE.SphereGeometry(0.17, 24, 16);
+    const rippleGeometry = new THREE.TorusGeometry(0.28, 0.01, 8, 64);
+    const ballMaterials = ['#14f1d9', '#a3e635', '#fb3f6c', '#e5ff7a'].map(
+      (color) =>
+        new THREE.MeshPhysicalMaterial({
+          color,
+          emissive: color,
+          emissiveIntensity: 0.95,
+          metalness: 0.18,
+          roughness: 0.12,
+          clearcoat: 1,
+          transparent: true,
+          opacity: 0.95,
+        }),
+    );
+
+    const dropBalls: DropBall[] = Array.from({ length: 20 }, (_, index) => {
+      const material = ballMaterials[index % ballMaterials.length].clone();
+      const mesh = new THREE.Mesh(ballGeometry, material);
+      const rippleMaterial = new THREE.MeshBasicMaterial({
+        color: material.color,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      });
+      const ripple = new THREE.Mesh(rippleGeometry, rippleMaterial);
+      const column = index % 10;
+      const row = Math.floor(index / 10);
+      const x = -6.1 + column * 1.35 + (row % 2) * 0.45;
+      const z = -4.25 + row * 2.15 + Math.sin(index * 1.7) * 0.72;
+      const floor = -2.18;
+      mesh.position.set(x, floor + 3, z);
+      ripple.position.set(x, floor + 0.03, z);
+      ripple.rotation.x = Math.PI / 2;
+      world.add(mesh, ripple);
+      return {
+        mesh,
+        ripple,
+        x,
+        z,
+        delay: index * 0.073,
+        speed: 0.14 + (index % 5) * 0.018,
+        height: 3.4 + (index % 4) * 0.55,
+        floor,
+        drift: 0.16 + (index % 3) * 0.05,
+      };
+    });
+
     const starsGeometry = new THREE.BufferGeometry();
     const starPositions = new Float32Array(520 * 3);
     for (let i = 0; i < 520; i += 1) {
@@ -249,6 +309,29 @@ const ThreeWorld = memo(() => {
         mesh.position.x = Math.sin(elapsed * 0.38 + index) * 0.16 * motion;
       });
 
+      dropBalls.forEach(({ mesh, ripple, x, z, delay, speed, height, floor, drift }, index) => {
+        const cycle = (elapsed * speed * motion + delay) % 1;
+        const fall = cycle < 0.82 ? cycle / 0.82 : 1;
+        const bounce = cycle >= 0.82 ? (cycle - 0.82) / 0.18 : 0;
+        const easedFall = 1 - (1 - fall) * (1 - fall);
+        const bounceLift = Math.sin(bounce * Math.PI) * 0.45 * (1 - bounce);
+        const impact = Math.max(0, 1 - Math.abs(cycle - 0.84) / 0.16);
+
+        mesh.position.x = x + Math.sin(elapsed * 0.92 + index) * drift;
+        mesh.position.z = z + Math.cos(elapsed * 0.74 + index * 0.8) * drift;
+        mesh.position.y = floor + height * (1 - easedFall) + bounceLift;
+        mesh.rotation.x += (0.018 + index * 0.0008) * motion;
+        mesh.rotation.z -= (0.013 + index * 0.0006) * motion;
+        mesh.scale.set(1 + impact * 0.18, 1 - impact * 0.28, 1 + impact * 0.18);
+
+        ripple.position.x = mesh.position.x;
+        ripple.position.z = mesh.position.z;
+        ripple.scale.setScalar(0.45 + impact * 2.2);
+        ripple.rotation.z += 0.012 * motion;
+        (ripple.material as THREE.MeshBasicMaterial).opacity = impact * 0.6;
+        ((mesh.material as THREE.MeshPhysicalMaterial).emissiveIntensity = 0.72 + impact * 1.05);
+      });
+
       renderer.render(scene, camera);
       frame = window.requestAnimationFrame(animate);
     };
@@ -277,6 +360,13 @@ const ThreeWorld = memo(() => {
       ribbons.forEach(({ mesh }) => {
         mesh.geometry.dispose();
         (mesh.material as THREE.Material).dispose();
+      });
+      ballGeometry.dispose();
+      rippleGeometry.dispose();
+      ballMaterials.forEach((material) => material.dispose());
+      dropBalls.forEach(({ mesh, ripple }) => {
+        (mesh.material as THREE.Material).dispose();
+        (ripple.material as THREE.Material).dispose();
       });
       starsGeometry.dispose();
       (stars.material as THREE.Material).dispose();
