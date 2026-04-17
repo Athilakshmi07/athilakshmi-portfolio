@@ -13,3 +13,5 @@ pnpm-debug.log*
 
 .chrome-*
 .readme-vite.*.log
+.scene-*.png
+.scene-vite.*.log
