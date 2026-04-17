@@ -1,0 +1,23 @@
+
+> portfolio@1.0.0 dev
+> vite --host 127.0.0.1 --port 5173
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m376[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5173[22m/[39m
+[2m12:05:13 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/apple/AppleHero.tsx, /src/index.css[22m
+[2m12:06:53 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/apple/AppleHero.tsx, /src/index.css[22m
+[2m12:06:58 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m12:07:42 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/apple/AppleHero.tsx, /src/index.css[22m
+[2m12:13:17 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+[2m12:13:24 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m12:13:33 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Navbar.tsx, /src/index.css[22m
+[2m12:13:44 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/immersive/SnapPortfolio.tsx, /src/index.css[22m
+[2m12:16:39 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/immersive/SnapPortfolio.tsx, /src/index.css[22m
+[2m12:20:57 am[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/immersive/SnapPortfolio.tsx, /src/index.css[22m
+[2m12:28:03 am[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mathilakshmi-portfolio/dist/index.html[22m
+[2m12:29:56 am[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m12:29:56 am[22m [36m[1m[vite][22m[39m server restarted.
+[2m12:30:06 am[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mathilakshmi-portfolio/tsconfig.node.tsbuildinfo[22m
+[2m12:30:52 am[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mathilakshmi-portfolio/index.html[22m
