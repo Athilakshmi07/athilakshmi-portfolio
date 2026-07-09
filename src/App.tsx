@@ -1,16 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import SnapPortfolio from './components/immersive/SnapPortfolio';
+import ThemeSwitcher from './components/immersive/ThemeSwitcher';
+import { SCENE_THEMES, DEFAULT_THEME, type SceneThemeId } from './data/sceneThemes';
 
 export default function App() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+  const [themeId, setThemeId] = useState<SceneThemeId>(DEFAULT_THEME);
+  const theme = SCENE_THEMES[themeId];
 
   useEffect(() => {
     // Always dark
     document.documentElement.classList.add('dark');
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (meta) meta.content = '#050510';
+    if (meta) meta.content = theme.bg;
+  }, [theme.bg]);
+
+  const handleChangeTheme = useCallback((id: SceneThemeId) => {
+    setThemeId(id);
   }, []);
 
   // Custom cursor
@@ -19,7 +27,6 @@ export default function App() {
     const dot = dotRef.current;
     if (!cursor || !dot) return;
 
-    // Check for touch device
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
     let cx = 0, cy = 0;
@@ -41,7 +48,6 @@ export default function App() {
       frame = requestAnimationFrame(animate);
     };
 
-    // Hover detection for interactive elements
     const onOver = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target.closest('a, button, [role="button"]')) {
@@ -75,7 +81,8 @@ export default function App() {
       <div ref={dotRef} className="custom-cursor-dot" />
 
       <Navbar />
-      <SnapPortfolio />
+      <SnapPortfolio theme={theme} />
+      <ThemeSwitcher activeTheme={themeId} onChangeTheme={handleChangeTheme} />
     </div>
   );
 }

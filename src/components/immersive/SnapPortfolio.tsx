@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import ThreeWorld from './ThreeWorld';
 import { experience, projects, skillGroups, stats, userData } from '../../data/portfolio';
 import { TiltCard } from './TiltCard';
+import { type SceneTheme } from '../../data/sceneThemes';
 
 /* ── Motion Presets ─────────────────────────────────────────── */
 const sectionMotion = {
@@ -101,21 +102,29 @@ function SkillTag({ label }: { label: string }) {
 }
 
 /* ── Main Component ─────────────────────────────────────────── */
-const SnapPortfolio = memo(() => {
+interface SnapPortfolioProps {
+  theme: SceneTheme;
+}
+
+const SnapPortfolio = memo(({ theme }: SnapPortfolioProps) => {
   const scrollToNext = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
   return (
-    <div className="relative h-screen overflow-hidden bg-[#050510] text-white">
+    <div className="relative h-screen overflow-hidden text-white" style={{ backgroundColor: theme.bg }}>
       {/* Three.js background */}
-      <ThreeWorld />
+      <ThreeWorld theme={theme} />
 
-      {/* Overlay gradients for depth */}
+      {/* Overlay gradients for depth — driven by theme */}
       <div className="pointer-events-none fixed inset-0 z-[1]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(20,241,217,0.08),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_70%,rgba(163,230,53,0.05),transparent_40%)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050510] to-transparent" />
+        {theme.overlayGradients.map((gradient, i) => (
+          <div key={i} className="absolute inset-0 transition-all duration-1000" style={{ background: gradient }} />
+        ))}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-32 transition-all duration-1000"
+          style={{ background: `linear-gradient(to top, ${theme.bg}, transparent)` }}
+        />
       </div>
 
       {/* ── Scrollable Content ──────────────────────────────── */}
