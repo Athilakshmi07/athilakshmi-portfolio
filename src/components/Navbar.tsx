@@ -1,12 +1,6 @@
-import { memo, useCallback, useState } from 'react';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { memo, useCallback, useState, useEffect, useRef } from 'react';
+import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useScrollProgress } from '../hooks/useScrollProgress';
-
-interface NavbarProps {
-  isDark: boolean;
-  onToggleTheme: () => void;
-}
 
 const NAV_LINKS = [
   { id: 'about', label: 'Overview' },
@@ -22,9 +16,52 @@ function scrollToSection(id: string) {
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-const Navbar = memo(({ isDark, onToggleTheme }: NavbarProps) => {
-  const { progress, isScrolled } = useScrollProgress();
+const Navbar = memo(() => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('about');
+  const raf = useRef(0);
+
+  // Listen to the snap-shell scroll container
+  useEffect(() => {
+    const el = document.querySelector('.snap-shell') as HTMLElement | null;
+    if (!el) return;
+
+    const handler = () => {
+      if (raf.current) return;
+      raf.current = requestAnimationFrame(() => {
+        const scrolled = el.scrollTop;
+        const height = el.scrollHeight - el.clientHeight;
+        setProgress(height > 0 ? (scrolled / height) * 100 : 0);
+        setIsScrolled(scrolled > 30);
+
+        // Detect active section
+        const sections = NAV_LINKS.map(link => ({
+          id: link.id,
+          el: document.getElementById(link.id),
+        }));
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const section = sections[i];
+          if (section.el) {
+            const rect = section.el.getBoundingClientRect();
+            if (rect.top <= window.innerHeight / 2) {
+              setActiveSection(section.id);
+              break;
+            }
+          }
+        }
+
+        raf.current = 0;
+      });
+    };
+
+    el.addEventListener('scroll', handler, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', handler);
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
+  }, []);
 
   const handleNav = useCallback((id: string) => {
     setMenuOpen(false);
@@ -33,9 +70,15 @@ const Navbar = memo(({ isDark, onToggleTheme }: NavbarProps) => {
 
   return (
     <>
+      {/* Progress Bar — gradient glow */}
       <div
-        className="fixed left-0 top-0 z-[200] h-[2px] bg-[#0071e3]"
-        style={{ width: `${progress}%`, transition: 'width 0.12s linear' }}
+        className="fixed left-0 top-0 z-[200] h-[2px]"
+        style={{
+          width: `${progress}%`,
+          background: 'linear-gradient(90deg, #14f1d9, #a3e635, #a78bfa)',
+          boxShadow: '0 0 12px rgba(163, 230, 53, 0.5), 0 0 24px rgba(20, 241, 217, 0.3)',
+          transition: 'width 0.12s linear',
+        }}
         role="progressbar"
         aria-valuenow={Math.round(progress)}
         aria-valuemin={0}
@@ -43,67 +86,78 @@ const Navbar = memo(({ isDark, onToggleTheme }: NavbarProps) => {
       />
 
       <nav
-        className={`fixed inset-x-0 top-0 z-[100] border-b transition-all duration-300 ${
+        className={`fixed inset-x-0 top-0 z-[100] transition-all duration-500 ${
           isScrolled
-            ? 'border-black/10 bg-white/80 shadow-sm shadow-black/[0.03] backdrop-blur-2xl dark:border-white/10 dark:bg-[#101010]/80'
-            : 'border-transparent bg-white/55 backdrop-blur-xl dark:bg-black/35'
+            ? 'border-b border-white/[0.06] bg-[#050510]/70 shadow-[0_4px_30px_rgba(0,0,0,0.5)] backdrop-blur-2xl'
+            : 'border-b border-transparent bg-transparent backdrop-blur-sm'
         }`}
       >
-        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-5">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5">
+          {/* Logo */}
           <button
             onClick={() => handleNav('about')}
-            className="text-[21px] font-semibold text-[#1d1d1f] transition-colors hover:text-[#0071e3] dark:text-[#f5f5f7]"
+            className="group relative text-xl font-black tracking-tight text-white transition-colors"
             aria-label="Scroll to overview"
           >
-            AL
+            <span className="gradient-text-3d">AL</span>
+            <span className="absolute -bottom-0.5 left-0 h-[2px] w-0 bg-[#a3e635] transition-all duration-300 group-hover:w-full" />
           </button>
 
-          <div className="hidden items-center gap-7 md:flex">
+          {/* Desktop Nav */}
+          <div className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className="text-xs font-medium tracking-normal text-[#1d1d1f]/75 transition-colors hover:text-[#0071e3] dark:text-[#f5f5f7]/75 dark:hover:text-white"
+                className={`relative rounded-lg px-3.5 py-2 text-xs font-semibold tracking-wide transition-all duration-300 ${
+                  activeSection === item.id
+                    ? 'text-[#a3e635]'
+                    : 'text-white/50 hover:text-white/80'
+                }`}
               >
                 {item.label}
+                {activeSection === item.id && (
+                  <motion.span
+                    layoutId="nav-active"
+                    className="absolute inset-0 rounded-lg bg-white/[0.06]"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onToggleTheme}
-              aria-label="Toggle colour scheme"
-              className="grid h-8 w-8 place-items-center rounded-lg text-[#1d1d1f]/75 transition-colors hover:bg-black/5 hover:text-[#0071e3] dark:text-white/75 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              {isDark ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-            <button
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen}
-              className="grid h-8 w-8 place-items-center rounded-lg text-[#1d1d1f] transition-colors hover:bg-black/5 md:hidden dark:text-white dark:hover:bg-white/10"
-            >
-              {menuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            className="grid h-9 w-9 place-items-center rounded-lg text-white/80 transition-colors hover:bg-white/10 md:hidden"
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
 
+        {/* Mobile menu */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
-              className="md:hidden border-t border-black/10 bg-white/95 px-5 py-5 backdrop-blur-2xl dark:border-white/10 dark:bg-[#101010]/95"
-              initial={{ opacity: 0, y: -8 }}
+              className="md:hidden border-t border-white/[0.06] bg-[#050510]/95 px-5 py-6 backdrop-blur-2xl"
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25 }}
             >
-              <div className="mx-auto flex max-w-6xl flex-col gap-4">
+              <div className="mx-auto flex max-w-6xl flex-col gap-5">
                 {NAV_LINKS.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNav(item.id)}
-                    className="text-left text-2xl font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    className={`text-left text-2xl font-bold transition-colors ${
+                      activeSection === item.id
+                        ? 'text-[#a3e635]'
+                        : 'text-white/70'
+                    }`}
                   >
                     {item.label}
                   </button>
