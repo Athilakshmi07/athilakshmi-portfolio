@@ -176,7 +176,7 @@ const SnapPortfolio = memo(({ theme }: SnapPortfolioProps) => {
                 <GlowButton onClick={() => scrollToNext('skills')}>
                   Explore my work <ArrowDown size={15} />
                 </GlowButton>
-                <GlowButton href={userData.resume} download="Athi_Lakshmi.pdf" variant="ghost">
+                <GlowButton href={userData.resume} download="Athi_Lakshmi.pdf" variant="ghost" target="_blank" rel="noopener noreferrer">
                   <Download size={15} /> Resume
                 </GlowButton>
                 <GlowButton href={userData.github} variant="ghost" target="_blank" rel="noopener noreferrer">
@@ -449,7 +449,7 @@ const SnapPortfolio = memo(({ theme }: SnapPortfolioProps) => {
               <GlowButton href={userData.linkedin} variant="ghost" target="_blank" rel="noopener noreferrer">
                 <Linkedin size={16} /> LinkedIn
               </GlowButton>
-              <GlowButton href={userData.resume} variant="ghost" download="Athi_Lakshmi.pdf">
+              <GlowButton href={userData.resume} variant="ghost" download="Athi_Lakshmi.pdf" target="_blank" rel="noopener noreferrer">
                 <ExternalLink size={16} /> Resume
               </GlowButton>
             </div>
