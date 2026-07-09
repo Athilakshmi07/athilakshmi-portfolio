@@ -27,6 +27,7 @@
     scroll-behavior: smooth;
     overflow-x: hidden;
     overscroll-behavior: none;
+    background-color: #050510;
   }
 
   body {
@@ -35,8 +36,8 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     overscroll-behavior: none;
-    background-color: var(--color-bg);
-    color: var(--color-text);
+    background-color: #050510;
+    color: #f0f0f5;
     cursor: none;
   }
 

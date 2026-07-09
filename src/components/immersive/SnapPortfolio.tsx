@@ -128,7 +128,9 @@ const SnapPortfolio = memo(() => {
         >
           <motion.div
             className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12"
-            {...sectionMotion}
+            initial={{ opacity: 0, y: 60, rotateX: 6 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
             {/* Left — Text */}
             <div>
@@ -182,8 +184,7 @@ const SnapPortfolio = memo(() => {
               className="grid grid-cols-2 gap-4"
               variants={staggerContainer}
               initial="hidden"
-              whileInView="visible"
-              viewport={{ amount: 0.4 }}
+              animate="visible"
             >
               {stats.map((stat, i) => (
                 <motion.div key={stat.label} variants={staggerItem}>
