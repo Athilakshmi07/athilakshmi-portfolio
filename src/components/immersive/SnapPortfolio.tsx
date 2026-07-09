@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { ArrowDown, ArrowRight, Download, Github, Linkedin, Mail, MapPin, Phone, ExternalLink } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import ThreeWorld from './ThreeWorld';
 import { experience, projects, skillGroups, stats, userData } from '../../data/portfolio';
 import { TiltCard } from './TiltCard';
@@ -22,7 +22,7 @@ const staggerContainer = {
   },
 };
 
-const staggerItem = {
+const staggerItem: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
   visible: {
     opacity: 1,
