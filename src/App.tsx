@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import Navbar from './components/Navbar';
 import SnapPortfolio from './components/immersive/SnapPortfolio';
 import ThemeSwitcher from './components/immersive/ThemeSwitcher';
 import { SCENE_THEMES, DEFAULT_THEME, type SceneThemeId } from './data/sceneThemes';
@@ -80,7 +79,6 @@ export default function App() {
       <div ref={cursorRef} className="custom-cursor" />
       <div ref={dotRef} className="custom-cursor-dot" />
 
-      <Navbar />
       <SnapPortfolio theme={theme} />
       <ThemeSwitcher activeTheme={themeId} onChangeTheme={handleChangeTheme} />
     </div>

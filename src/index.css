@@ -284,6 +284,70 @@
   100% { transform: scale(1) translateZ(0); opacity: 1; }
 }
 
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── Custom Theme Classes ─────────────────────────────────── */
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.bg-site {
+  background-color: #0b031a;
+  background-attachment: fixed;
+}
+
+.bg-explosion {
+  background-image: url('/bg-explosion.png');
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+/* Form Inputs */
+.input {
+  width: 100%;
+  height: 52px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0 20px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+.input:focus {
+  border-color: var(--color-accent-cyan);
+  box-shadow: 0 0 15px rgba(20, 241, 217, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.textarea {
+  width: 100%;
+  height: 160px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 16px 20px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  resize: none;
+  transition: all 0.3s;
+}
+
+.textarea:focus {
+  border-color: var(--color-accent-cyan);
+  box-shadow: 0 0 15px rgba(20, 241, 217, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* ── Mobile: Disable custom cursor & reduce motion ────────── */
 @media (max-width: 768px) {
   body { cursor: auto; }
